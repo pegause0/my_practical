@@ -1,0 +1,57 @@
+#include <stdio.h>
+    #include <string.h>
+    
+    #define MAX_WINDOW_SIZE 256
+    #define MAX_LOOKAHEAD_SIZE 15
+    
+    struct LZ77Token {
+        int offset;  // Offset to the start of the matched string
+        int length;  // Length of the matched string
+        char nextChar;  // The next character after the matched string
+    };
+    
+    void compressLZ77(char *input) {
+        int inputLen = strlen(input);
+        int currentPos = 0;
+    
+        while (currentPos < inputLen) {
+            struct LZ77Token token;
+            token.offset = 0;
+            token.length = 0;
+            token.nextChar = input[currentPos];
+    
+            // Search for the longest matching string in the window
+            int i;
+            for (i = currentPos - 1; i >= 0 && token.length < MAX_LOOKAHEAD_SIZE; i--) {
+                int j;
+                for (j = 0; j < MAX_LOOKAHEAD_SIZE && currentPos + j < inputLen; j++) {
+                    if (input[i + j] != input[currentPos + j]) {
+                        break;
+                    }
+                }
+    
+                if (j > token.length) {
+                    token.offset = currentPos - i;
+                    token.length = j;
+                    token.nextChar = (currentPos + j < inputLen) ? input[currentPos + j] : '\0';
+                }
+            }
+    
+            // Output the LZ77 token
+            printf("<%d,%d,%c>", token.offset, token.length, token.nextChar);
+    
+            // Move the current position
+            currentPos += (token.length + 1);
+        }
+    }
+    
+    int main() {
+        char input[] = "CABRACADABRARRARRAD";
+    
+        printf("Original String: %s\n", input);
+        printf("Compressed String: ");
+        compressLZ77(input);
+    
+        return 0;
+    }
+    

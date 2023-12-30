@@ -1,0 +1,20 @@
+from PIL import Image
+import os
+
+def compress_image(input_path, output_path, quality=20):
+    try:
+        img = Image.open(input_path)
+        img.save(output_path, "JPEG", optimize=True, quality=quality)
+    except Exception as e:
+        print("Error: {e}")
+
+if __name__ == "_main_":
+    input_image_path = "C:/Users/HRUTVA/OneDrive/Desktop/COLLEGE/SEM 7/Data Compression(DC)/Hrutva DC/input.jpg" 
+    output_image_path = "C:/Users/HRUTVA/OneDrive/Desktop/COLLEGE/SEM 7/Data Compression(DC)/Hrutva DC/output_compressed.jpg"  
+    compression_quality = 95
+
+    if os.path.exists(input_image_path):
+        compress_image(input_image_path, output_image_path, compression_quality)
+        print("Image compressed and saved as {output_image_path}")
+    else:
+        print("Input image not found.")

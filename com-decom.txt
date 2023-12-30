@@ -1,0 +1,53 @@
+#include<stdio.h>
+#include<string.h>
+
+struct
+{
+	char ch;
+	int count;
+} RLE[100];
+
+void main()
+{
+	int i,j,n,count;
+	char ch,str[100];
+	START:
+	printf("\nRUN-LENGTH ENCODING ENCODING AND DECODING\n");
+	printf("\n 1. Run-Length Encoding\n 2. Run-Length Decoding\n 3. Exit the Program\n Enter your choice");
+	ch= getche();
+	switch(ch)
+	{
+		case '1': printf("\nEnter input sequence: ");
+				gets(str);
+				printf("\n The output Run-Length Sequence is: ");
+				for(i=count=0, ch=*str; i<strlen(str); i++,count++)
+				{
+					if(ch!=str[i])
+					{
+						printf("\n[%c , %x] \t",ch,count);
+						ch=str[i];
+						count =0;
+					}
+				}
+				printf("\n[%c , %x] \t",ch,count);
+				break;
+		case '2': printf("\nEnter RLE values: \n[Press Enter to Terminate!!\n");
+				for(i=n=0;;i++,n++)
+				{
+					printf("\nEnter the character: ");
+					RLE[i].ch= getche();
+					printf("\n");
+					if(RLE[i].ch==13)
+					break;
+					printf("Enter Count for %c: ",RLE[i].ch);
+					scanf("%d",&RLE[i].count);
+				}
+				printf("\n The Output Run-Length Decoded Sequence is: ");
+				for(i=0;i<n;i++)
+				for(j=0;j<RLE[i].count;j++)
+				putch(RLE[i].ch);
+				break;
+		case '3': printf("\n ERROR: Invalid Menu Choice\nPlease enter valid choice");
+				goto START;
+	}
+}

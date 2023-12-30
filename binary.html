@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int i,j;
+
+// Define a structure for a Huffman node
+struct HuffmanNode {
+    char data;
+    unsigned frequency;
+    struct HuffmanNode* left;
+    struct HuffmanNode* right;
+};
+
+// Function to create a new Huffman node
+struct HuffmanNode* newHuffmanNode(char data, unsigned frequency) {
+    struct HuffmanNode* node = (struct HuffmanNode*)malloc(sizeof(struct HuffmanNode));
+    node->data = data;
+    node->frequency = frequency;
+    node->left = node->right = NULL;
+    return node;
+}
+
+// Function to build the Huffman tree
+struct HuffmanNode* buildHuffmanTree(char data[], int frequency[], int size) {
+    struct HuffmanNode *left, *right, *top;
+    
+    // Create an array of Huffman nodes
+    struct HuffmanNode* nodes[size];
+    
+    for (i = 0; i < size; i++) {
+        nodes[i] = newHuffmanNode(data[i], frequency[i]);
+    }
+    
+    while (size > 1) {
+        // Sort the nodes based on frequency
+        for (i = 0; i < size - 1; i++) {
+            for (j = i + 1; j < size; j++) {
+                if (nodes[i]->frequency > nodes[j]->frequency) {
+                    struct HuffmanNode* temp = nodes[i];
+                    nodes[i] = nodes[j];
+                    nodes[j] = temp;
+                }
+            }
+        }
+        
+        left = nodes[0];
+        right = nodes[1];
+        
+        top = newHuffmanNode('$', left->frequency + right->frequency);
+        top->left = left;
+        top->right = right;
+        
+        nodes[0] = top;
+        size--;
+    }
+    
+    return nodes[0];
+}
+
+// Function to print Huffman codes from the Huffman tree
+void printHuffmanCodes(struct HuffmanNode* root, int arr[], int top) {
+    static char code[100];
+    
+    if (root->left) {
+        arr[top] = 0;
+        printHuffmanCodes(root->left, arr, top + 1);
+    }
+    
+    if (root->right) {
+        arr[top] = 1;
+        printHuffmanCodes(root->right, arr, top + 1);
+    }
+    
+    if (!root->left && !root->right) {
+        printf("Character: %c, Frequency: %u, Huffman Code: ", root->data, root->frequency);
+        for (i = 0; i < top; i++) {
+            printf("%d", arr[i]);
+            code[i] = arr[i] + '0';
+        }
+        code[top] = '\0';
+        printf(" (%s)\n", code);
+    }
+}
+
+int main() {
+    char data[] = {'a', 'b', 'c'};
+    int frequency[] = {37, 38, 25};
+    int size = sizeof(data) / sizeof(data[0]);
+    
+    struct HuffmanNode* root = buildHuffmanTree(data, frequency, size);
+    
+    int arr[100], top = 0;
+    
+    printf("Huffman Codes:\n");
+    printHuffmanCodes(root, arr, top);
+    
+    return 0;
+}

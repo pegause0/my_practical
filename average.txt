@@ -1,0 +1,21 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+int main()
+{
+	int i;
+	float avglen;
+	char str[100];
+	char input[100]={'a','b','c','d'};
+	int code[100]={00,01,11,10};
+	float prob[100]={0.14,0.25,0.08,0.37};
+	printf("Enter character stream: ");
+	scanf("%s",str);
+	for(i=0;i<3;i++)
+	{
+		avglen=input[i]*code[i];
+	}
+	printf("Average length is: %.2lf\n",avglen);
+
+}

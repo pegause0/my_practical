@@ -1,0 +1,66 @@
+#include <stdio.h>
+    #include <string.h>
+    
+    // Define the dictionary
+    struct DictionaryEntry {
+        char entry[3];  // Maximum entry length is 2
+        int codeword;
+    };
+    
+    // Function to find the codeword for a given entry
+    int findCodeword(const struct DictionaryEntry dictionary[], int dictionarySize, const char* entry) {
+        int i;
+        for (i = 0; i < dictionarySize; i++) {
+            if (strcmp(dictionary[i].entry, entry) == 0) {
+                return dictionary[i].codeword;
+            }
+        }
+        return -1;  // Not found
+    }
+    
+    int main() {
+        // Define the dictionary entries
+        struct DictionaryEntry dictionary[] = {
+            { "a", 0 },
+            { "b", 1 },
+            { "w", 2 },
+            { "ab", 3 },
+            { "bb", 4 },
+            { "wa", 5 }
+        };
+    
+        int dictionarySize = sizeof(dictionary) / sizeof(dictionary[0]);
+    
+        const char* inputText = "ababwabab";
+    
+        int inputLength = strlen(inputText);
+    
+        int index = 0;
+        while (index < inputLength) {
+            int found = 0;
+            int entryLength = 2;  // Maximum entry length in the dictionary
+            while (entryLength > 0 && !found) {
+                char currentEntry[3];  // Maximum entry length is 2
+                strncpy(currentEntry, &inputText[index], entryLength);
+                currentEntry[entryLength] = '\0';
+    
+                int codeword = findCodeword(dictionary, dictionarySize, currentEntry);
+                if (codeword != -1) {
+                    printf("%d ", codeword);
+                    index += entryLength;
+                    found = 1;
+                }
+                entryLength--;
+            }
+            if (!found) {
+                // Handle the case where no match was found (e.g., output an error message)
+                printf("Entry not found for: %c\n", inputText[index]);
+                index++;
+            }
+        }
+    
+        printf("\n");
+    
+        return 0;
+    }
+    

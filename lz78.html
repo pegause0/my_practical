@@ -1,0 +1,82 @@
+#include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    
+    #define MAX_DICT_SIZE 1024
+    
+    typedef struct {
+        int index;
+        char next_char;
+    } Tuple;
+    
+    void lz78_compress(const char *input, FILE *output) {
+        int dict_size = 1;
+        char dictionary[MAX_DICT_SIZE];
+        dictionary[0] = '\0';
+    
+        int i = 0;
+        while (input[i] != '\0') {
+            char current_char = input[i];
+            char current_str[2] = {current_char, '\0'};
+            char temp_str[MAX_DICT_SIZE] = "";
+            strcpy(temp_str, dictionary);
+            strcat(temp_str, current_str);
+    
+            int j = 0;
+            while (temp_str[j] != '\0' && temp_str[j] == input[i + j]) {
+                j++;
+            }
+    
+            if (temp_str[j] == '\0') {
+                dictionary[dict_size++] = current_char;
+                dictionary[dict_size] = '\0';
+                fprintf(output, "(0,%c)", current_char);
+                i++;
+            } else {
+                fprintf(output, "(%d,%c)", dict_size - 1, input[i + j]);
+                i += j + 1;
+            }
+        }
+    }
+    
+    void lz78_decompress(FILE *input, FILE *output) {
+        int dict_size = 1;
+        char dictionary[MAX_DICT_SIZE];
+        dictionary[0] = '\0';
+    
+        Tuple tuple;
+        while (fscanf(input, "(%d,%c)", &tuple.index, &tuple.next_char) == 2) {
+            if (tuple.index == 0) {
+                fprintf(output, "%c", tuple.next_char);
+                dictionary[dict_size++] = tuple.next_char;
+                dictionary[dict_size] = '\0';
+            } else {
+                fprintf(output, "%s%c", &dictionary[tuple.index - 1], tuple.next_char);
+                int len = strlen(&dictionary[tuple.index - 1]);
+                dictionary[dict_size++] = dictionary[tuple.index - 1];
+                dictionary[dict_size++] = tuple.next_char;
+                dictionary[dict_size] = '\0';
+            }
+        }
+    }
+    
+    int main() {
+        const char *input_str = "ABABABA";
+        FILE *compressed_file = fopen("somefile.txt", "w");
+        FILE *decompressed_file = fopen("decompressed.txt", "w");
+    
+        if (compressed_file == NULL || decompressed_file == NULL) {
+            perror("Error opening files");
+            return 1;
+        }
+    
+        lz78_compress(input_str, compressed_file);
+        fclose(compressed_file);
+    
+        compressed_file = fopen("compressed.txt", "r");
+        lz78_decompress(compressed_file, decompressed_file);
+        fclose(decompressed_file);
+    
+        return 0;
+    }
+    
